@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rejestr testów</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6fa;color:#222b36;font-family:Arial,sans-serif}
+main{max-width:500px;margin:7vh auto;padding:28px;background:white;border:1px solid #e1e6ed;border-radius:14px;box-shadow:0 10px 32px #24344b10}
+h1{font-size:24px;margin:0 0 10px}p{font-size:14px;line-height:1.5;color:#5d6878}
+label{display:block;margin:17px 0 7px;font-weight:700;font-size:14px}
+input,textarea{display:block;width:100%;padding:12px;border:1px solid #cbd2dc;border-radius:8px;font:inherit}
+textarea{min-height:95px;resize:vertical}
+button{width:100%;margin-top:20px;padding:13px;border:0;border-radius:8px;background:#245bc7;color:white;font-size:16px;font-weight:700;cursor:pointer}
+#status{display:none;margin-top:15px;padding:12px;border-radius:8px;background:#eef5ff;font-size:14px;line-height:1.45}
+.warning{margin-top:18px;padding:12px;background:#fff7e7;border-radius:8px;color:#684d18;font-size:12px;line-height:1.5}
+</style>
+</head>
+<body><main>
+<h1>Rejestr danych testowych</h1>
+<p>Przykładowa aplikacja edukacyjna zapisująca niepoufne rekordy do pliku w repozytorium GitHub.</p>
+<form id="form">
+<label for="email">Testowy adres e-mail</label>
+<input id="email" type="email" placeholder="test@example.com" required maxlength="160">
+<label for="note">Notatka testowa</label>
+<textarea id="note" placeholder="Np. sprawdzenie działania formularza" required maxlength="300"></textarea>
+<button type="submit">Zapisz rekord w GitHub</button>
+</form>
+<div id="status" role="status"></div>
+<div class="warning">Nie wpisuj haseł, tokenów, danych prywatnych ani innych informacji poufnych. Token GitHub jest używany wyłącznie przez backend i nie trafia do przeglądarki.</div>
+</main>
+<script>
+const form = document.getElementById('form');
+const statusBox = document.getElementById('status');
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  statusBox.style.display = 'block';
+  statusBox.textContent = 'Zapisywanie…';
+  try {
+    const response = await fetch('/api/record', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        email: document.getElementById('email').value,
+        testNote: document.getElementById('note').value
+      })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Błąd zapisu');
+    statusBox.textContent = result.message;
+    form.reset();
+  } catch (error) {
+    statusBox.textContent = error.message || 'Nie udało się połączyć z backendem.';
+  }
+});
+</script></body></html>
