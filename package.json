@@ -1,0 +1,8 @@
+{
+  "name": "github-test-data-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Demo app that stores non-sensitive test records in a GitHub repository",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}
